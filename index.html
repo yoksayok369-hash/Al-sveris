@@ -2,8 +2,19 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- iPhone çentik dahil tam ekran -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- PWA / Uygulama modu -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Alışveriş Asistanım">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.json">
+
   <title>Alışveriş Asistanım</title>
+
   <style>
     :root {
       --bg: #f4f5fb;
@@ -14,18 +25,22 @@
       --border: #e5e7eb;
       --text-main: #111827;
       --text-muted: #6b7280;
+      --card-bg: #ffffff;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+    }
+
+    body {
       background: radial-gradient(circle at top, #e0f2fe, #eef2ff 40%, #e5e7eb);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text-main);
     }
 
@@ -34,13 +49,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+
+      /* iPhone çentik / alt bar için güvenli alan */
+      padding-top: calc(16px + env(safe-area-inset-top));
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      padding-left: calc(16px + env(safe-area-inset-left));
+      padding-right: calc(16px + env(safe-area-inset-right));
     }
 
     .card {
       width: 100%;
       max-width: 520px;
-      background: #ffffff;
+      background: var(--card-bg);
       border-radius: 18px;
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
       padding: 16px 16px 18px;
@@ -61,726 +81,714 @@
       z-index: 1;
     }
 
-    header {
+    .card-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      gap: 16px;
       margin-bottom: 10px;
     }
 
-    .title-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #4f46e5, #22c55e);
+    .logo-pill {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, #22c55e, #16a34a);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-size: 22px;
-      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.5);
+      box-shadow: 0 10px 24px rgba(22, 163, 74, 0.4);
+      flex-shrink: 0;
     }
 
-    .title-text h1 {
-      font-size: 18px;
+    .logo-pill span {
+      font-size: 30px;
+    }
+
+    .title-block h1 {
       margin: 0;
+      font-size: 20px;
+      font-weight: 700;
     }
 
-    .title-text span {
-      display: block;
-      font-size: 12px;
+    .title-block p {
+      margin: 2px 0 0;
+      font-size: 13px;
       color: var(--text-muted);
     }
 
-    .badge {
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      background: #ecfdf3;
-      color: #16a34a;
-      border: 1px solid #bbf7d0;
+    .pill-row {
       display: flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
     }
 
-    .badge-dot {
+    .pill {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #6b7280;
+    }
+
+    .status-pill {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: #15803d;
+    }
+
+    .status-dot {
       width: 7px;
       height: 7px;
-      border-radius: 999px;
+      border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.25);
     }
 
-    .categories {
+    .tabs {
       display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin: 14px 0 12px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      padding-bottom: 2px;
     }
 
-    .cat-btn {
+    .tab-btn {
+      border: none;
+      outline: none;
+      padding: 7px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      padding: 5px 10px;
-      font-size: 12px;
-      background: #f9fafb;
-      color: var(--text-muted);
+      font-size: 13px;
+      background: #f3f4ff;
+      color: #4b5563;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       flex-shrink: 0;
     }
 
-    .cat-btn span.emoji {
+    .tab-btn span.emoji {
       font-size: 14px;
     }
 
-    .cat-btn.active {
-      background: var(--primary-soft);
-      color: var(--primary);
-      border-color: #c7d2fe;
-      box-shadow: 0 0 0 1px #e0e7ff;
+    .tab-btn.active {
+      background: #4f46e5;
+      color: white;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.45);
     }
 
-    .inputs {
-      display: flex;
-      gap: 6px;
+    .form-row {
+      display: grid;
+      grid-template-columns: 1.5fr 0.6fr 0.9fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 8px;
       margin-bottom: 10px;
-      flex-wrap: wrap;
     }
 
-    .inputs input {
-      padding: 8px 9px;
+    .input {
       border-radius: 10px;
       border: 1px solid var(--border);
+      padding: 7px 9px;
       font-size: 13px;
-      flex: 1 1 100px;
-      min-width: 0;
+      outline: none;
+      width: 100%;
+      background: #f9fafb;
     }
 
-    .inputs input:focus {
-      outline: 2px solid #e0e7ff;
-      border-color: #818cf8;
+    .input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px #4f46e520;
+      background: white;
     }
 
-    .inputs button {
+    .input::placeholder {
+      color: #9ca3af;
+    }
+
+    .btn-primary {
       border: none;
-      border-radius: 12px;
-      padding: 8px 16px;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #fff;
+      outline: none;
+      border-radius: 11px;
+      background: #16a34a;
+      color: white;
+      font-size: 14px;
       font-weight: 600;
-      font-size: 13px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      box-shadow: 0 7px 16px rgba(22, 163, 74, 0.4);
+      justify-content: center;
+      gap: 6px;
+      padding: 0 16px;
+      cursor: pointer;
+      box-shadow: 0 12px 26px rgba(22, 163, 74, 0.6);
     }
 
-    .inputs button:active {
+    .btn-primary:active {
       transform: translateY(1px);
-      box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.7);
     }
 
-    .list {
-      border-radius: 14px;
-      border: 1px solid var(--border);
+    .totals-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1.1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .total-card {
+      border-radius: 12px;
       background: #f9fafb;
-      padding: 6px;
+      padding: 8px 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .total-label {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .total-value {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .total-subline {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 1px;
+    }
+
+    .total-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+    }
+
+    .chip-danger {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .list-section {
+      margin-top: 4px;
+      border-top: 1px dashed #e5e7eb;
+      padding-top: 8px;
       max-height: 260px;
       overflow-y: auto;
     }
 
-    .empty-state {
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      padding: 16px 6px;
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 4px;
     }
 
-    .item {
-      display: flex;
+    .badge-count {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+      font-size: 10px;
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
       gap: 8px;
-      padding: 6px 4px;
-      border-radius: 10px;
-      transition: background 0.15s, transform 0.1s;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e5e7eb80;
     }
 
-    .item:not(:last-child) {
-      border-bottom: 1px dashed #e5e7eb;
-    }
-
-    .item:hover {
-      background: #eef2ff;
-      transform: translateY(-1px);
-    }
-
-    .checkbox {
-      flex-shrink: 0;
-    }
-
-    .checkbox input {
-      width: 18px;
-      height: 18px;
-    }
-
-    .item-main {
-      flex: 1;
-      min-width: 0;
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .item-name {
       font-size: 13px;
       font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
     }
 
-    .item-name span.label.done {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-
-    .item-tag {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #4f46e5;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-
-    .item-sub {
+    .item-meta {
       font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
+      color: #9ca3af;
+    }
+
+    .category-pill {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .item-price {
+      font-size: 12px;
+      font-weight: 600;
+      color: #111827;
+      text-align: right;
     }
 
     .item-actions {
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
       gap: 4px;
-      margin-left: 4px;
     }
 
-    .item-actions button {
+    .btn-link {
       border: none;
-      background: transparent;
-      font-size: 16px;
-      line-height: 1;
-      padding: 0 3px;
+      background: none;
+      font-size: 11px;
+      color: #9ca3af;
+      padding: 0;
       cursor: pointer;
     }
 
-    .item-actions button.delete {
-      color: var(--danger);
+    .btn-link.danger {
+      color: #ef4444;
     }
 
-    .item-actions button.edit {
-      color: #6b7280;
-      font-size: 13px;
-    }
-
-    .footer {
-      margin-top: 10px;
-      font-size: 12px;
-    }
-
-    .totals-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .totals-card {
-      flex: 1;
-      min-width: 0;
-      border-radius: 12px;
-      padding: 8px 10px;
-      background: #f9fafb;
-      border: 1px solid var(--border);
-    }
-
-    .totals-card h4 {
-      margin: 0 0 4px;
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .totals-card strong {
-      font-size: 14px;
-    }
-
-    .actions-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .actions-row button {
-      flex: 1;
-      border-radius: 999px;
-      border: none;
-      padding: 7px 8px;
-      font-size: 11px;
-      font-weight: 500;
+    .checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-    }
-
-    .btn-clear {
-      background: #f3f4f6;
-      color: #4b5563;
-    }
-
-    .btn-done {
-      background: #fef9c3;
-      color: #854d0e;
-    }
-
-    .global-total {
-      margin-top: 6px;
       font-size: 11px;
-      color: var(--text-muted);
-      text-align: right;
-    }
-
-    /* Splash screen */
-    .splash {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at top, #4f46e5, #0f172a);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: white;
-      z-index: 999;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
-
-    .splash.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .splash-logo {
-      width: 90px;
-      height: 90px;
-      border-radius: 30px;
-      background: rgba(15, 23, 42, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 42px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-      animation: pulse 1.3s infinite;
-    }
-
-    .splash-title {
-      margin-top: 16px;
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .splash-sub {
-      margin-top: 4px;
-      font-size: 12px;
-      opacity: 0.8;
-    }
-
-    .splash-btn {
-      margin-top: 18px;
-      padding: 8px 18px;
-      border-radius: 999px;
-      border: none;
+      cursor: pointer;
       background: white;
-      color: #4f46e5;
-      font-size: 13px;
-      font-weight: 600;
+    }
+
+    .checkbox.checked {
+      background: #22c55e;
+      border-color: #16a34a;
+      color: white;
+    }
+
+    .item-row.bought .item-name {
+      text-decoration: line-through;
+      color: #9ca3af;
+    }
+
+    .item-row.bought .item-price {
+      color: #9ca3af;
+    }
+
+    .footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-ghost {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px dashed #e5e7eb;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 11px;
+      padding: 6px 10px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.6);
+      justify-content: center;
     }
 
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.08);
-      }
-      100% {
-        transform: scale(1);
-      }
+    .btn-ghost.danger {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-style: solid;
+      border-color: #fecaca;
     }
 
-    @media (max-width: 400px) {
+    .small-icon {
+      font-size: 13px;
+    }
+
+    @media (max-width: 480px) {
       .card {
-        padding: 12px 12px 16px;
+        border-radius: 18px;
+        padding: 14px 14px 16px;
       }
-      header {
-        align-items: flex-start;
+
+      .form-row {
+        grid-template-columns: 1.4fr 0.6fr 0.8fr;
       }
-      .inputs {
+
+      .totals-row {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-actions {
         flex-direction: column;
-      }
-      .inputs button {
-        width: 100%;
-        justify-content: center;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Splash ekranı -->
-  <div class="splash" id="splash">
-    <div class="splash-logo">🛍️</div>
-    <div class="splash-title">Alışveriş Asistanım</div>
-    <div class="splash-sub">Market • Eczane • Ev • Teknoloji</div>
-    <button class="splash-btn" onclick="hideSplash()">
-      Başla
-      <span>➜</span>
-    </button>
-  </div>
-
   <div class="app-shell">
     <div class="card">
       <div class="card-inner">
-        <header>
-          <div class="title-box">
-            <div class="logo">🛒</div>
-            <div class="title-text">
-              <h1>Alışveriş Asistanım</h1>
-              <span>Liste yap, harcamanı kontrol et.</span>
+        <header class="card-header">
+          <div class="logo-pill">
+            <span>🛒</span>
+          </div>
+          <div class="title-block">
+            <h1>Alışveriş Asistanım</h1>
+            <p>Liste yap, harcamanı kontrol et.</p>
+            <div class="pill-row">
+              <span class="pill">Market</span>
+              <span class="pill">Eczane</span>
+              <span class="pill">Ev</span>
+              <span class="pill">Teknoloji</span>
             </div>
           </div>
-          <div class="badge">
-            <span class="badge-dot"></span>
-            Kayıtlar saklanıyor
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span id="save-status">Kayıtlar saklanıyor</span>
           </div>
         </header>
 
-        <!-- Kategoriler -->
-        <div class="categories" id="categories"></div>
-
-        <!-- Giriş alanı -->
-        <div class="inputs">
-          <input id="name" placeholder="Ürün adı (ör. Süt)" />
-          <input
-            id="qty"
-            type="number"
-            min="1"
-            value="1"
-            style="max-width: 60px"
-          />
-          <input
-            id="price"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="Fiyat (TL)"
-            style="max-width: 90px"
-          />
-          <button onclick="addItem()">
-            ➕ Ekle
-          </button>
+        <div class="tabs" id="category-tabs">
+          <!-- JS ile doldurulacak -->
         </div>
 
-        <!-- Liste -->
-        <div class="list" id="list"></div>
-
-        <!-- Alt bölüm -->
-        <div class="footer">
-          <div class="totals-row">
-            <div class="totals-card">
-              <h4>Seçili kategori</h4>
-              <strong id="catTotal">0.00 TL</strong>
-              <div style="font-size: 11px; color: var(--text-muted);">
-                Alınan: <span id="catDone">0.00 TL</span>
-              </div>
-            </div>
-            <div class="totals-card">
-              <h4>Genel toplam</h4>
-              <strong id="globalTotal">0.00 TL</strong>
-              <div style="font-size: 11px; color: var(--text-muted);">
-                Tüm kategoriler
-              </div>
-            </div>
+        <form id="item-form">
+          <div class="form-row">
+            <input id="item-name" class="input" type="text" placeholder="Ürün adı (ör. Süt)" autocomplete="off" />
+            <input id="item-qty" class="input" type="number" min="1" step="1" value="1" />
+            <input id="item-price" class="input" type="number" min="0" step="0.01" placeholder="Fiyat (TL)" />
           </div>
 
-          <div class="actions-row">
-            <button class="btn-clear" onclick="clearCurrentCategory()">
-              🧹 Sadece bu kategoriyi temizle
-            </button>
-            <button class="btn-done" onclick="removeDone()">
-              ✅ Alınanları kaldır
+          <div class="form-row-2">
+            <select id="item-category" class="input">
+              <option value="Market">Market</option>
+              <option value="Eczane">Eczane</option>
+              <option value="Ev">Ev</option>
+              <option value="Teknoloji">Teknoloji</option>
+            </select>
+            <button type="submit" class="btn-primary">
+              <span class="small-icon">＋</span> Ekle
             </button>
           </div>
+        </form>
+
+        <div class="totals-row">
+          <div class="total-card">
+            <div class="total-label">
+              <span>Seçili kategori</span>
+              <span class="total-badge" id="current-category-label">Market</span>
+            </div>
+            <div class="total-value" id="category-total">0,00 TL</div>
+            <div class="total-subline" id="category-subline">Alınan: 0,00 TL</div>
+          </div>
+
+          <div class="total-card">
+            <div class="total-label">
+              <span>Genel toplam</span>
+              <span class="total-badge chip-danger">Tüm kategoriler</span>
+            </div>
+            <div class="total-value" id="overall-total">0,00 TL</div>
+            <div class="total-subline" id="overall-subline">Alınan: 0,00 TL</div>
+          </div>
+        </div>
+
+        <section class="list-section">
+          <div class="list-header">
+            <span>Liste</span>
+            <span class="badge-count" id="item-count-badge">0 ürün</span>
+          </div>
+          <div id="items-container">
+            <!-- JS ile doldurulacak -->
+          </div>
+        </section>
+
+        <div class="footer-actions">
+          <button class="btn-ghost" id="clear-current-category">
+            <span class="small-icon">🧹</span>
+            <span>Sadece bu kategoriyi temizle</span>
+          </button>
+          <button class="btn-ghost" id="clear-bought">
+            <span class="small-icon">✅</span>
+            <span>Alınanları kaldır</span>
+          </button>
+          <button class="btn-ghost danger" id="clear-all">
+            <span class="small-icon">🗑</span>
+            <span>Tüm listeyi sıfırla</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Kategoriler
-    const categories = [
-      { id: "market", label: "Market", emoji: "🛒" },
-      { id: "eczane", label: "Eczane", emoji: "💊" },
-      { id: "ev", label: "Ev", emoji: "🏠" },
-      { id: "teknoloji", label: "Teknoloji", emoji: "💻" },
-      { id: "diger", label: "Diğer", emoji: "✨" }
-    ];
-
+    const categories = ["Market", "Eczane", "Ev", "Teknoloji"];
+    let currentCategory = "Market";
     let items = [];
-    let currentCategory = "market";
 
-    const LS_KEY = "alisveris_asistan_v1";
+    const STORAGE_KEY = "alisveris_asistanim_v1";
 
-    function saveState() {
-      const payload = {
-        items,
-        currentCategory
-      };
-      localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    const tabsEl = document.getElementById("category-tabs");
+    const itemForm = document.getElementById("item-form");
+    const nameInput = document.getElementById("item-name");
+    const qtyInput = document.getElementById("item-qty");
+    const priceInput = document.getElementById("item-price");
+    const categorySelect = document.getElementById("item-category");
+    const currentCategoryLabel = document.getElementById("current-category-label");
+    const categoryTotalEl = document.getElementById("category-total");
+    const categorySublineEl = document.getElementById("category-subline");
+    const overallTotalEl = document.getElementById("overall-total");
+    const overallSublineEl = document.getElementById("overall-subline");
+    const itemsContainer = document.getElementById("items-container");
+    const itemCountBadge = document.getElementById("item-count-badge");
+    const saveStatusEl = document.getElementById("save-status");
+
+    const btnClearCurrent = document.getElementById("clear-current-category");
+    const btnClearBought = document.getElementById("clear-bought");
+    const btnClearAll = document.getElementById("clear-all");
+
+    function formatTL(value) {
+      return value.toLocaleString("tr-TR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) + " TL";
     }
 
-    function loadState() {
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ items }));
+      saveStatusEl.textContent = "Kayıtlar saklanıyor";
+      setTimeout(() => {
+        saveStatusEl.textContent = "Güncel";
+      }, 800);
+    }
+
+    function load() {
       try {
-        const raw = localStorage.getItem(LS_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
         const data = JSON.parse(raw);
-        if (Array.isArray(data.items)) items = data.items;
-        if (data.currentCategory) currentCategory = data.currentCategory;
+        if (Array.isArray(data.items)) {
+          items = data.items;
+        }
       } catch (e) {
-        console.warn("loadState error", e);
+        console.error(e);
       }
     }
 
-    function formatTL(num) {
-      return num.toFixed(2).replace(".", ",") + " TL";
-    }
-
-    // Kategori butonlarını çiz
-    function renderCategories() {
-      const container = document.getElementById("categories");
-      container.innerHTML = "";
+    function renderTabs() {
+      tabsEl.innerHTML = "";
       categories.forEach((cat) => {
         const btn = document.createElement("button");
-        btn.className =
-          "cat-btn" + (cat.id === currentCategory ? " active" : "");
-        btn.onclick = () => {
-          currentCategory = cat.id;
-          saveState();
-          render();
-        };
-        const emojiSpan = document.createElement("span");
-        emojiSpan.className = "emoji";
-        emojiSpan.textContent = cat.emoji;
-        const labelSpan = document.createElement("span");
-        labelSpan.textContent = cat.label;
-        btn.appendChild(emojiSpan);
-        btn.appendChild(labelSpan);
-        container.appendChild(btn);
+        btn.className = "tab-btn" + (cat === currentCategory ? " active" : "");
+        btn.dataset.category = cat;
+
+        let emoji = "🛒";
+        if (cat === "Eczane") emoji = "💊";
+        else if (cat === "Ev") emoji = "🏠";
+        else if (cat === "Teknoloji") emoji = "💻";
+
+        btn.innerHTML = `<span class="emoji">${emoji}</span><span>${cat}</span>`;
+        btn.addEventListener("click", () => {
+          currentCategory = cat;
+          categorySelect.value = cat;
+          renderAll();
+        });
+
+        tabsEl.appendChild(btn);
       });
     }
 
-    // Listeyi çiz
-    function render() {
-      renderCategories();
-
-      const listEl = document.getElementById("list");
-      listEl.innerHTML = "";
-
-      const filtered = items.filter((it) => it.category === currentCategory);
+    function renderTotals() {
+      currentCategoryLabel.textContent = currentCategory;
 
       let catTotal = 0;
-      let catDone = 0;
-      let globalTotal = 0;
+      let catBought = 0;
+      let overallTotal = 0;
+      let overallBought = 0;
 
-      items.forEach((it) => {
-        if (it.price) {
-          const t = it.price * it.qty;
-          globalTotal += t;
-          if (it.category === currentCategory) {
-            catTotal += t;
-            if (it.done) catDone += t;
+      items.forEach((item) => {
+        const line = item.qty * item.price;
+        overallTotal += line;
+        if (item.bought) {
+          overallBought += line;
+        }
+        if (item.category === currentCategory) {
+          catTotal += line;
+          if (item.bought) {
+            catBought += line;
           }
         }
       });
 
-      if (!filtered.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = "Bu kategoride henüz ürün yok. Hadi birkaç tane ekleyelim.";
-        listEl.appendChild(empty);
-      } else {
-        filtered.forEach((item) => {
-          const index = items.indexOf(item);
-          const row = document.createElement("div");
-          row.className = "item";
-
-          const checkbox = document.createElement("div");
-          checkbox.className = "checkbox";
-          const cb = document.createElement("input");
-          cb.type = "checkbox";
-          cb.checked = item.done;
-          cb.onchange = () => toggleDone(index);
-          checkbox.appendChild(cb);
-
-          const main = document.createElement("div");
-          main.className = "item-main";
-
-          const nameRow = document.createElement("div");
-          nameRow.className = "item-name";
-          const label = document.createElement("span");
-          label.className = "label" + (item.done ? " done" : "");
-          label.textContent = `${item.name} ×${item.qty}`;
-          nameRow.appendChild(label);
-
-          const tag = document.createElement("span");
-          tag.className = "item-tag";
-          const catInfo = categories.find((c) => c.id === item.category);
-          tag.textContent = catInfo ? catInfo.label : "Kategori";
-          nameRow.appendChild(tag);
-
-          const sub = document.createElement("div");
-          sub.className = "item-sub";
-          const pricePart = document.createElement("span");
-          if (item.price) {
-            pricePart.textContent = `${formatTL(item.price)} • Toplam: ${formatTL(
-              item.price * item.qty
-            )}`;
-          } else {
-            pricePart.textContent = "Fiyat girilmedi";
-          }
-          const note = document.createElement("span");
-          note.textContent = item.done ? "Alındı" : "Alınmadı";
-          sub.appendChild(pricePart);
-          sub.appendChild(note);
-
-          main.appendChild(nameRow);
-          main.appendChild(sub);
-
-          const actions = document.createElement("div");
-          actions.className = "item-actions";
-          const delBtn = document.createElement("button");
-          delBtn.className = "delete";
-          delBtn.textContent = "✕";
-          delBtn.title = "Sil";
-          delBtn.onclick = () => deleteItem(index);
-          actions.appendChild(delBtn);
-
-          row.appendChild(checkbox);
-          row.appendChild(main);
-          row.appendChild(actions);
-
-          listEl.appendChild(row);
-        });
-      }
-
-      document.getElementById("catTotal").textContent = formatTL(catTotal);
-      document.getElementById("catDone").textContent = formatTL(catDone);
-      document.getElementById("globalTotal").textContent = formatTL(globalTotal);
+      categoryTotalEl.textContent = formatTL(catTotal);
+      categorySublineEl.textContent = "Alınan: " + formatTL(catBought);
+      overallTotalEl.textContent = formatTL(overallTotal);
+      overallSublineEl.textContent = "Alınan: " + formatTL(overallBought);
     }
 
-    function addItem() {
-      const nameInput = document.getElementById("name");
-      const qtyInput = document.getElementById("qty");
-      const priceInput = document.getElementById("price");
+    function renderList() {
+      itemsContainer.innerHTML = "";
+      const sorted = [...items].sort((a, b) => {
+        if (a.category === b.category) return a.id - b.id;
+        return categories.indexOf(a.category) - categories.indexOf(b.category);
+      });
 
+      itemCountBadge.textContent =
+        sorted.length === 0 ? "0 ürün" : `${sorted.length} ürün`;
+
+      if (sorted.length === 0) {
+        const empty = document.createElement("div");
+        empty.style.fontSize = "12px";
+        empty.style.color = "#9ca3af";
+        empty.style.padding = "4px 0 2px";
+        empty.textContent = "Liste boş. Ürün eklemeye başla.";
+        itemsContainer.appendChild(empty);
+        return;
+      }
+
+      sorted.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "item-row" + (item.bought ? " bought" : "");
+
+        const left = document.createElement("div");
+        left.className = "item-left";
+
+        const checkbox = document.createElement("div");
+        checkbox.className = "checkbox" + (item.bought ? " checked" : "");
+        checkbox.innerHTML = item.bought ? "✓" : "";
+        checkbox.addEventListener("click", () => {
+          item.bought = !item.bought;
+          save();
+          renderAll();
+        });
+
+        const textBlock = document.createElement("div");
+        const nameEl = document.createElement("div");
+        nameEl.className = "item-name";
+        nameEl.textContent = item.name;
+
+        const metaEl = document.createElement("div");
+        metaEl.className = "item-meta";
+        metaEl.innerHTML = `${item.qty} adet • <span class="category-pill">${item.category}</span>`;
+
+        textBlock.appendChild(nameEl);
+        textBlock.appendChild(metaEl);
+
+        left.appendChild(checkbox);
+        left.appendChild(textBlock);
+
+        const priceEl = document.createElement("div");
+        priceEl.className = "item-price";
+        const lineTotal = item.qty * item.price;
+        priceEl.textContent = formatTL(lineTotal);
+
+        const actions = document.createElement("div");
+        actions.className = "item-actions";
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn-link danger";
+        deleteBtn.textContent = "Sil";
+        deleteBtn.addEventListener("click", () => {
+          items = items.filter((i) => i.id !== item.id);
+          save();
+          renderAll();
+        });
+
+        actions.appendChild(deleteBtn);
+
+        row.appendChild(left);
+        row.appendChild(priceEl);
+        row.appendChild(actions);
+
+        itemsContainer.appendChild(row);
+      });
+    }
+
+    function renderAll() {
+      renderTabs();
+      renderTotals();
+      renderList();
+    }
+
+    itemForm.addEventListener("submit", (e) => {
+      e.preventDefault();
       const name = nameInput.value.trim();
-      if (!name) return;
+      const qty = parseFloat(qtyInput.value || "1");
+      const price = parseFloat(priceInput.value || "0");
+      const category = categorySelect.value;
 
-      const qty = parseInt(qtyInput.value, 10) || 1;
-      const priceVal = priceInput.value.replace(",", ".");
-      const price = priceVal ? parseFloat(priceVal) : null;
+      if (!name) {
+        nameInput.focus();
+        return;
+      }
 
       items.push({
+        id: Date.now(),
         name,
-        qty,
-        price: isNaN(price) ? null : price,
-        done: false,
-        category: currentCategory
+        qty: isNaN(qty) || qty <= 0 ? 1 : qty,
+        price: isNaN(price) || price < 0 ? 0 : price,
+        category,
+        bought: false,
       });
 
       nameInput.value = "";
       qtyInput.value = "1";
       priceInput.value = "";
-
-      saveState();
-      render();
-      nameInput.focus();
-    }
-
-    function toggleDone(index) {
-      items[index].done = !items[index].done;
-      saveState();
-      render();
-    }
-
-    function deleteItem(index) {
-      items.splice(index, 1);
-      saveState();
-      render();
-    }
-
-    function clearCurrentCategory() {
-      items = items.filter((it) => it.category !== currentCategory);
-      saveState();
-      render();
-    }
-
-    function removeDone() {
-      items = items.filter((it) => !it.done);
-      saveState();
-      render();
-    }
-
-    // Splash kontrol
-    function hideSplash() {
-      const splash = document.getElementById("splash");
-      splash.classList.add("hidden");
-    }
-
-    window.addEventListener("load", () => {
-      loadState();
-      render();
-      // otomatik kaybolsun
-      setTimeout(() => {
-        hideSplash();
-      }, 1200);
-      // Enter ile ekleme
-      document
-        .getElementById("name")
-        .addEventListener("keydown", (e) => e.key === "Enter" && addItem());
-      document
-        .getElementById("price")
-        .addEventListener("keydown", (e) => e.key === "Enter" && addItem());
+      save();
+      renderAll();
     });
+
+    btnClearCurrent.addEventListener("click", (e) => {
+      e.preventDefault();
+      items = items.filter((i) => i.category !== currentCategory);
+      save();
+      renderAll();
+    });
+
+    btnClearBought.addEventListener("click", (e) => {
+      e.preventDefault();
+      items = items.filter((i) => !i.bought);
+      save();
+      renderAll();
+    });
+
+    btnClearAll.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (!confirm("Tüm listeyi silmek istediğine emin misin?")) return;
+      items = [];
+      save();
+      renderAll();
+    });
+
+    // Başlangıç
+    load();
+    renderAll();
   </script>
 </body>
 </html>
